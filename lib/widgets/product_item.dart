@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/providers/products_provider.dart';
 import 'package:provider/provider.dart';
 import '../screens/products_detail_screen.dart';
 import '../providers/product.dart';
+
 
 class ProductItem extends StatelessWidget {
   //const ProductItem({Key key}) : super(key: key);
@@ -21,6 +23,7 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('product item runs');
     final product = Provider.of<Product>(context, listen: false);
 
     return ClipRRect(
@@ -40,7 +43,7 @@ class ProductItem extends StatelessWidget {
         footer: GridTileBar(
           backgroundColor: Colors.black87,
           leading: Consumer<Product>(
-            builder: (ctx, product, child) => IconButton(
+            builder: (ctx, product, _) => IconButton(
               icon: Icon(
                 product.isFavourite ? Icons.favorite : Icons.favorite_border,
                 color: Theme.of(context).accentColor,
