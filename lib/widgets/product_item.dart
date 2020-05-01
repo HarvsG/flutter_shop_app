@@ -1,34 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../screens/products_detail_screen.dart';
-import '../models/product.dart';
+import '../providers/product.dart';
 
 class ProductItem extends StatelessWidget {
   //const ProductItem({Key key}) : super(key: key);
-  final String id;
-  final String title;
-  //final String description;
-  //final double price;
-  final String imageUrl;
+  // final String id;
+  // final String title;
+  // //final String description;
+  // //final double price;
+  // final String imageUrl;
 
-  const ProductItem(
-      {Key key,
-      @required this.id,
-      @required this.title,
-      @required this.imageUrl})
-      : super(key: key);
+  // const ProductItem(
+  //     {Key key,
+  //     @required this.id,
+  //     @required this.title,
+  //     @required this.imageUrl})
+  //     : super(key: key);
   //bool isFavourite;
 
   @override
   Widget build(BuildContext context) {
+    final product = Provider.of<Product>(context, listen: true);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
         child: GestureDetector(
-          onTap: (){
-            Navigator.of(context).pushNamed(ProductsDetailScreen.routeName, arguments: id);
+          onTap: () {
+            Navigator.of(context).pushNamed(ProductsDetailScreen.routeName,
+                arguments: product.id);
           },
-                  child: Image.network(
-            imageUrl,
+          child: Image.network(
+            product.imageUrl,
             fit: BoxFit.cover,
           ),
         ),
@@ -37,13 +41,13 @@ class ProductItem extends StatelessWidget {
           backgroundColor: Colors.black87,
           leading: IconButton(
             icon: Icon(
-              Icons.favorite_border,
+              product.isFavourite ? Icons.favorite : Icons.favorite_border,
               color: Theme.of(context).accentColor,
             ),
-            onPressed: null,
+            onPressed: product.toggleFavouriteStatus,
           ),
           title: Text(
-            title,
+            product.title,
             textAlign: TextAlign.center,
           ),
           trailing: IconButton(
