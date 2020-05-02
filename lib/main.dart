@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/screens/orders_scren.dart';
 import 'package:provider/provider.dart';
 import './screens/products_detail_screen.dart';
 import './screens/products_overview_screen.dart';
 import './providers/products_provider.dart';
 import './providers/cart.dart';
+import './providers/orders.dart';
 import './screens/cart_screen.dart';
-
 
 void main() => runApp(MyApp());
 
@@ -15,11 +16,14 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create:(ctx) => Products(),
+          create: (ctx) => Products(),
         ),
         ChangeNotifierProvider(
-          create:(ctx) => Cart(),
+          create: (ctx) => Cart(),
         ),
+        ChangeNotifierProvider(
+          create: (ctx) => Orders(),
+        )
       ],
       child: MaterialApp(
         title: 'MyShop',
@@ -28,8 +32,10 @@ class MyApp extends StatelessWidget {
           accentColor: Colors.deepOrange,
           fontFamily: 'Lato',
         ),
-        home: ProductsOverviewScreen(),
+        initialRoute: ProductsOverviewScreen.routeName,
         routes: {
+          OrdersScreen.routeName: (ctx) => OrdersScreen(),
+          ProductsOverviewScreen.routeName : (ctx) => ProductsDetailScreen(),
           ProductsDetailScreen.routeName: (ctx) => ProductsDetailScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
         },
