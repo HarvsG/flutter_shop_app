@@ -108,7 +108,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       'imageUrl': productToEdit.imageUrl,
       'isFavourite': productToEdit.isFavourite,
     };
-    print(temp);
     ({
       'id': id,
       'title': title,
@@ -119,11 +118,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }).forEach((k, v) {
       if (v != null) {
         temp[k] = v;
-        print(v);
       }
     });
-    print(temp);
-
     return Product(
         id: temp['id'],
         title: temp['title'],
@@ -279,7 +275,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             controller: _imageUrlController,
                             focusNode: _imageFocusNode,
                             validator: (value) {
-                              print(Uri.parse(value).isAbsolute);
                               if (value.isEmpty |
                                   !Uri.parse(value).isAbsolute) {
                                 return 'Please enter a valid URL';
