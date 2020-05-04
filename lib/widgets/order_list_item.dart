@@ -18,7 +18,6 @@ class _OrderListItemState extends State<OrderListItem> {
   bool _expanded = false;
   @override
   Widget build(BuildContext context) {
-    print(_expanded);
 
     return Container(
       child: Card(
