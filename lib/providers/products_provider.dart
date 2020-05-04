@@ -55,7 +55,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) {
-    final url = 'https://my-shop-app-be8be.firebaseio.com/products.json';
+    final url = 'https://my-shop-app-be8be.firebaseio.com/products';
     return http
         .post(url,
             body: json.encode({
@@ -77,7 +77,7 @@ class Products with ChangeNotifier {
       _items.add(newProduct);
       notifyListeners();
     }).catchError((error){
-      print(error);
+      throw error;
     });
   }
 
