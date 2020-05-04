@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../widgets/app_drawer.dart';
 import '../providers/products_provider.dart';
 import '../widgets/user_product_item.dart';
+import '../screens/edit_product_screen.dart';
+
 
 class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-products';
@@ -16,12 +18,16 @@ class UserProductsScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Your products'),
           actions: <Widget>[
-            IconButton(icon: const Icon(Icons.add), onPressed: () {})
+            IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  Navigator.of(context).pushNamed(EditProductScreen.routeName);
+                })
           ],
         ),
         drawer: AppDrawer(),
         body: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: ListView.builder(
             itemBuilder: (_, i) => Column(
               children: <Widget>[
@@ -29,7 +35,7 @@ class UserProductsScreen extends StatelessWidget {
                   title: productsData.items[i].title,
                   imageUrl: productsData.items[i].imageUrl,
                 ),
-                Divider()
+                const Divider()
               ],
             ),
             itemCount: productsData.items.length,
