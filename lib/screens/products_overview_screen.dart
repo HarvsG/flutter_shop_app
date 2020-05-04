@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import '../widgets/app_drawer.dart';
 import '../providers/cart.dart';
 import '../providers/products_provider.dart';
+import '../providers/product.dart';
 import 'package:provider/provider.dart';
 import '../widgets/products_grid.dart';
 //import '../providers/product.dart';
-import '../providers/products_provider.dart';
 import '../widgets/badge.dart';
 import '../screens/cart_screen.dart';
 
@@ -25,6 +25,24 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFavourites = false;
+  bool _isInit = true;
+  bool _isLoading = true;
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      Provider.of<Products>(context, listen: true)
+          .fetchAndSetProducts()
+          .then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+        ;
+      });
+      _isInit = false;
+    }
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,14 +75,16 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               child: ch,
               value: cart.itemCount.toString(),
             ),
-            child: IconButton(icon: Icon(Icons.shopping_cart), onPressed: (){
-              Navigator.of(context).pushNamed(CartScreen.routeName);
-            }),
+            child: IconButton(
+                icon: Icon(Icons.shopping_cart),
+                onPressed: () {
+                  Navigator.of(context).pushNamed(CartScreen.routeName);
+                }),
           )
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductsGrid(_showOnlyFavourites),
+      body: _isLoading ? Center(child: CircularProgressIndicator(),) : ProductsGrid(_showOnlyFavourites),
     );
   }
 }
