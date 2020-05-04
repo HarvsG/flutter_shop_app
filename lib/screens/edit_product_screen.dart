@@ -28,6 +28,36 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.initState();
   }
 
+  bool _isInit = true;
+  var _initValues = {
+    'title': '',
+    'description': '',
+    'price': '',
+    'imageUrl': '',
+  };
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final productId = ModalRoute.of(context).settings.arguments as String;
+      if (productId != null) {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        _initValues = {
+          'title': _editedProduct.title,
+          'description': _editedProduct.description,
+          'price': _editedProduct.price.toString(),
+          'imageUrl': '',
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+      _isInit = false;
+    }
+
+    _isInit = false;
+    super.didChangeDependencies();
+  }
+
   @override
   void dispose() {
     _imageFocusNode.removeListener(_updateImageUrl);
@@ -48,7 +78,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void _saveForm() {
     if (_form.currentState.validate()) {
       _form.currentState.save();
-      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+      if (_editedProduct.id != null) {
+        Provider.of<Products>(context, listen: false)
+            .updateProduct(_editedProduct.id, _editedProduct);
+        Navigator.of(context).pop();
+      } else {
+        Provider.of<Products>(context, listen: false)
+            .addProduct(_editedProduct);
+        Navigator.of(context).pop();
+      }
     } else {
       return;
     }
@@ -60,13 +98,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
       String title,
       String description,
       double price,
-      String imageUrl}) {
+      String imageUrl,
+      String isFavourite}) {
     Map<String, dynamic> temp = {
       'id': productToEdit.id,
       'title': productToEdit.title,
       'description': productToEdit.description,
       'price': productToEdit.price,
       'imageUrl': productToEdit.imageUrl,
+      'isFavourite': productToEdit.isFavourite,
     };
     print(temp);
     ({
@@ -74,7 +114,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
       'title': title,
       'description': description,
       'price': price,
-      'imageUrl': imageUrl
+      'imageUrl': imageUrl,
+      'isFavourite': productToEdit.isFavourite,
     }).forEach((k, v) {
       if (v != null) {
         temp[k] = v;
@@ -88,7 +129,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
         title: temp['title'],
         description: temp['description'],
         price: temp['price'],
-        imageUrl: temp['imageUrl']);
+        imageUrl: temp['imageUrl'],
+        isFavourite: temp['isFavourite']);
   }
 
   @override
@@ -109,6 +151,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               child: Column(
                 children: <Widget>[
                   TextFormField(
+                    initialValue: _initValues['title'],
                     decoration: InputDecoration(
                       labelText: 'Title',
                       hintText: 'e.g Flared Trousers',
@@ -137,6 +180,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     // },
                   ),
                   TextFormField(
+                    initialValue: _initValues['price'],
                     decoration: InputDecoration(
                       labelText: 'Price (£)',
                       hintText: '10.99',
@@ -174,6 +218,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     // },
                   ),
                   TextFormField(
+                    initialValue: _initValues['description'],
                     decoration: InputDecoration(
                       labelText: 'Product Description',
                       hintText: 'An inspiring pair of 80s memorabelia',
@@ -224,6 +269,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         ),
                         Expanded(
                           child: TextFormField(
+                            //initialValue: _initValues['imageUrl'],
                             decoration: InputDecoration(
                               labelText: 'Image URL',
                               hintText: 'https://i.imgur.com/uNiQuEiD.jpg',
