@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../screens/products_detail_screen.dart';
 import '../providers/product.dart';
 
-
 class ProductItem extends StatelessWidget {
   //const ProductItem({Key key}) : super(key: key);
   // final String id;
@@ -58,12 +57,21 @@ class ProductItem extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           trailing: IconButton(
-            icon: Icon(
-              Icons.add_shopping_cart,
-              color: Theme.of(context).accentColor,
-            ),
-            onPressed: () => cart.addItem(product.id,product.price, product.title)
-          ),
+              icon: Icon(
+                Icons.add_shopping_cart,
+                color: Theme.of(context).accentColor,
+              ),
+              onPressed: () {
+                cart.addItem(product.id, product.price, product.title);
+                Scaffold.of(context).hideCurrentSnackBar();
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('Added to cart'),
+                  duration: Duration(seconds: 2),
+                  action: SnackBarAction(label: 'UNDO', onPressed: () {
+                    cart.removeSingleItem(product.id);
+                  }),
+                ));
+              }),
         ),
       ),
     );
