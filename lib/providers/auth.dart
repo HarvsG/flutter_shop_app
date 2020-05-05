@@ -9,6 +9,22 @@ class Auth with ChangeNotifier {
   DateTime _tokenExpiryDate;
   String _userId;
 
+  bool get isAuth {
+    if (token != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  String get token {
+    if (_tokenExpiryDate != null && _tokenExpiryDate.isAfter(DateTime.now()) && _token != null) {
+      return _token;
+    } else {
+      return null;
+    }
+  }
+
   Future<void> _authenticate(
       {String email, String password, String urlSegment}) async {
     final url =
@@ -21,10 +37,14 @@ class Auth with ChangeNotifier {
             'returnSecureToken': true,
           }));
       final responseData = json.decode(response.body);
-      if (responseData['error'] != null){
+      if (responseData['error'] != null) {
         // this is firebase specific behaviour as it actully returns a status code 200 with error in the response body
         throw HttpException(responseData['error']['message']);
       }
+      _token = responseData['idToken'];
+      _userId = responseData['localId'];
+      _tokenExpiryDate = DateTime.now().add(Duration(seconds: int.parse(responseData['expiresIn']))) ;
+      notifyListeners();
     } catch (e) {
       throw e;
     }
