@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:my_shop_app/models/http_exception.dart';
 
 import './product.dart';
 
@@ -133,13 +134,15 @@ class Products with ChangeNotifier {
     _items.removeAt(existingProductIndex);
     http.delete(url).then((response) {
       if (response.statusCode >= 400) {
+        throw HttpException('Failed to delete on server');
         // resinstate the product if the server returns an error
-        _items.insert(existingProductIndex, existingProduct);
-        notifyListeners();
       } else {
         existingProduct = null;
         existingProductIndex = null;
       }
+    }).catchError((e) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
     });
     notifyListeners();
   }
