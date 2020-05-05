@@ -106,10 +106,23 @@ class Products with ChangeNotifier {
     // });
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
+    final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json';
     final prodindex = _items.indexWhere((prod) => prod.id == id);
-    _items[prodindex] = newProduct;
-    notifyListeners();
+    try {
+      await http.patch(url,
+          body: json.encode({
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'price': newProduct.price,
+            'imageUrl': newProduct.imageUrl,
+            //'isFavourite': newProduct.isFavourite
+          }));
+      _items[prodindex] = newProduct;
+      notifyListeners();
+    } catch (e) {
+      throw e;
+    }
   }
 
   void deleteProduct(String id) {
