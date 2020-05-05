@@ -10,14 +10,14 @@ class OrdersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final orderData = Provider.of<Orders>(context, listen: true);
+    final orderData = Provider.of<Orders>(context, listen: false);
     return Container(
       child: Scaffold(
         appBar: AppBar(
           title: Text('Your Orders'),
         ),
         body: RefreshIndicator(
-          onRefresh: () async{
+          onRefresh: () async {
             try {
               await orderData.fetchOrders();
             } catch (e) {
@@ -26,9 +26,22 @@ class OrdersScreen extends StatelessWidget {
           },
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ListView.builder(
-              itemBuilder: (ctx, i) => OrderListItem(orderData.orders[i]),
-              itemCount: orderData.orders.length,
+            child: FutureBuilder(
+              future: Provider.of<Orders>(context, listen: false).fetchOrders(),
+              builder: (ctx, dataSnapshot) {
+                if (dataSnapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  return Consumer<Orders>(
+                      builder: (ctx, orderData, child) => ListView.builder(
+                            itemBuilder: (ctx, i) =>
+                                OrderListItem(orderData.orders[i]),
+                            itemCount: orderData.orders.length,
+                          ));
+                }
+              },
             ),
           ),
         ),

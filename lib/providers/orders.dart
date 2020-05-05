@@ -48,7 +48,7 @@ class Orders with ChangeNotifier {
           id: name,
           amount: order['amount'] as double,
           dateTime: DateTime.parse(order['dateTime']),
-          products: loadedCartItems,
+          products: loadedCartItems.reversed.toList(),
         ));
       });
       _orders = loadedOrders;
