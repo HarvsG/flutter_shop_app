@@ -126,7 +126,21 @@ class Products with ChangeNotifier {
   }
 
   void deleteProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
+    final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json';
+    var existingProductIndex = _items.indexWhere((item) => item.id == id);
+    var existingProduct = _items[existingProductIndex];
+    // uses optimistic updating
+    _items.removeAt(existingProductIndex);
+    http.delete(url).then((response) {
+      if (response.statusCode >= 400) {
+        // resinstate the product if the server returns an error
+        _items.insert(existingProductIndex, existingProduct);
+        notifyListeners();
+      } else {
+        existingProduct = null;
+        existingProductIndex = null;
+      }
+    });
     notifyListeners();
   }
 }
