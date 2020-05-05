@@ -100,7 +100,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url = 'https://my-shop-app-be8be.firebaseio.com/products.json';
+    final url = 'https://my-shop-app-be8be.firebaseio.com/products.json?auth=$token';
     try {
       final response = await http.post(url,
           body: json.encode({
@@ -129,7 +129,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> updateProduct(String id, Product newProduct) async {
-    final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json';
+    final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json?auth=$token';
     final prodindex = _items.indexWhere((prod) => prod.id == id);
     try {
       await http.patch(url,
@@ -148,7 +148,7 @@ class Products with ChangeNotifier {
   }
 
   void deleteProduct(String id) {
-    final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json';
+    final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json?auth=$token';
     var existingProductIndex = _items.indexWhere((item) => item.id == id);
     var existingProduct = _items[existingProductIndex];
     // uses optimistic updating

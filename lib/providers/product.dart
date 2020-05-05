@@ -12,6 +12,7 @@ class Product with ChangeNotifier {
   final double price;
   final String imageUrl;
   bool isFavourite;
+  String _authToken;
 
   Product({
     @required this.id,
@@ -22,8 +23,19 @@ class Product with ChangeNotifier {
     this.isFavourite = false,
   });
 
+  String get token {
+    if (_authToken != null) {
+      return _authToken;
+    } else {
+      return null;
+    }
+  }
+  void addToken(String newToken) {
+    _authToken = newToken;
+  }
+
   Future<void> toggleFavouriteStatus() async {
-    final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json';
+    final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json?auth=$token';
     //use optimistic updating
     final oldStatus = isFavourite;
     isFavourite = !isFavourite;
