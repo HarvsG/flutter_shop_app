@@ -6,6 +6,10 @@ import 'package:my_shop_app/models/http_exception.dart';
 import './product.dart';
 
 class Products with ChangeNotifier {
+  String _authToken;
+
+
+
   List<Product> _items = [
     // Product(
     //   id: 'p1',
@@ -41,6 +45,8 @@ class Products with ChangeNotifier {
     // ),
   ];
 
+  
+
   //var _showFavouritesOnly = false;
 
   List<Product> get items {
@@ -51,12 +57,24 @@ class Products with ChangeNotifier {
     return _items.where((item) => item.isFavourite == true).toList();
   }
 
+
+  String get token {
+    if (_authToken != null) {
+      return _authToken;
+    } else {
+      return null;
+    }
+  }
+  void addToken(String newToken) {
+    _authToken = newToken;
+  }
+
   Product findById(id) {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
   Future<void> fetchAndSetProducts() async {
-    const url = 'https://my-shop-app-be8be.firebaseio.com/products.json';
+    final url = 'https://my-shop-app-be8be.firebaseio.com/products.json?auth=$token';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
