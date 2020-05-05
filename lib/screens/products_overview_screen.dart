@@ -37,9 +37,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         setState(() {
           _isLoading = false;
         });
-        ;
+        print('init ran');
+        _isInit = false;
+      }).catchError((e){
+        print('error in product_overview_screen');
       });
-      _isInit = false;
     }
     super.didChangeDependencies();
   }
@@ -84,7 +86,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: _isLoading ? Center(child: CircularProgressIndicator(),) : ProductsGrid(_showOnlyFavourites),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductsGrid(_showOnlyFavourites),
     );
   }
 }
