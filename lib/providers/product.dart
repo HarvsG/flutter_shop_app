@@ -23,18 +23,21 @@ class Product with ChangeNotifier {
     this.isFavourite = false,
   });
 
-  String get token {
-    if (_authToken != null) {
-      return _authToken;
-    } else {
-      return null;
-    }
-  }
-  void addToken(String newToken) {
-    _authToken = newToken;
-  }
+  // String get token {
+  //   if (_authToken != null) {
+  //     return _authToken;
+  //   } else {
+  //     return null;
+  //   }
+  // }
+  // void addToken(String newToken) {
+  //   _authToken = newToken;
+  //   print('new token set in product');
+  //   notifyListeners();
+  // }
 
-  Future<void> toggleFavouriteStatus() async {
+  Future<void> toggleFavouriteStatus(String token) async {
+    print('Token is $token');
     final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json?auth=$token';
     //use optimistic updating
     final oldStatus = isFavourite;
@@ -53,6 +56,7 @@ class Product with ChangeNotifier {
       // roll back changes
       isFavourite = oldStatus;
       notifyListeners();
+      print(e);
       throw e;
     }
   }

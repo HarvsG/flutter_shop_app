@@ -67,6 +67,7 @@ class Products with ChangeNotifier {
   }
   void addToken(String newToken) {
     _authToken = newToken;
+    notifyListeners();
   }
 
   Product findById(id) {

@@ -35,6 +35,7 @@ class Orders with ChangeNotifier {
   }
   void addToken(String newToken) {
     _authToken = newToken;
+    notifyListeners();
   }
 
   Future<void> fetchOrders() async {
