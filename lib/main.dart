@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
           ),
           home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
           routes: {
-            AuthScreen.routeName: (ctx) => AuthScreen(),
+            //AuthScreen.routeName: (ctx) => AuthScreen(), // for some reason this line prevents autologut
             OrdersScreen.routeName: (ctx) => OrdersScreen(),
             ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
             ProductsDetailScreen.routeName: (ctx) => ProductsDetailScreen(),
