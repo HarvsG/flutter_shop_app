@@ -7,8 +7,7 @@ import './product.dart';
 
 class Products with ChangeNotifier {
   String _authToken;
-
-
+  String _userId;
 
   List<Product> _items = [
     // Product(
@@ -45,8 +44,6 @@ class Products with ChangeNotifier {
     // ),
   ];
 
-  
-
   //var _showFavouritesOnly = false;
 
   List<Product> get items {
@@ -57,7 +54,6 @@ class Products with ChangeNotifier {
     return _items.where((item) => item.isFavourite == true).toList();
   }
 
-
   String get token {
     if (_authToken != null) {
       return _authToken;
@@ -65,8 +61,18 @@ class Products with ChangeNotifier {
       return null;
     }
   }
+
   void addToken(String newToken) {
     _authToken = newToken;
+    notifyListeners();
+  }
+
+  String get userId {
+    return _userId;
+  }
+
+  void addUserid(String newUserId) {
+    _userId = newUserId;
     notifyListeners();
   }
 
@@ -74,14 +80,20 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
-    final url = 'https://my-shop-app-be8be.firebaseio.com/products.json?auth=$token';
+  Future<void> fetchAndSetProducts({bool filterByUser = false}) async {
+    final url = filterByUser
+        ? 'https://my-shop-app-be8be.firebaseio.com/products.json?auth=$token&orderBy="creatorId"&equalTo="$userId"'
+        : 'https://my-shop-app-be8be.firebaseio.com/products.json?auth=$token';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      if (extractedData == null){
+      if (extractedData == null) {
         return;
       }
+      final favouriteResponse = await http.get(
+          'https://my-shop-app-be8be.firebaseio.com/userFavourites/$userId.json?auth=$token');
+      final favouriteData =
+          jsonDecode(favouriteResponse.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
@@ -90,7 +102,8 @@ class Products with ChangeNotifier {
           description: prodData['description'],
           price: prodData['price'],
           imageUrl: prodData['imageUrl'],
-          isFavourite: prodData['isFavourite'],
+          isFavourite:
+              favouriteData == null ? false : favouriteData[prodId] ?? false,
         ));
       });
       _items = loadedProducts;
@@ -101,7 +114,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    final url = 'https://my-shop-app-be8be.firebaseio.com/products.json?auth=$token';
+    final url =
+        'https://my-shop-app-be8be.firebaseio.com/products.json?auth=$token';
     try {
       final response = await http.post(url,
           body: json.encode({
@@ -109,7 +123,8 @@ class Products with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageUrl': product.imageUrl,
-            'isFavourite': product.isFavourite
+            'creatorId': userId,
+            //'isFavourite': product.isFavourite
           }));
       final newProduct = Product(
         id: json.decode(response.body)['name'],
@@ -130,7 +145,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> updateProduct(String id, Product newProduct) async {
-    final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json?auth=$token';
+    final url =
+        'https://my-shop-app-be8be.firebaseio.com/products/$id.json?auth=$token';
     final prodindex = _items.indexWhere((prod) => prod.id == id);
     try {
       await http.patch(url,
@@ -149,7 +165,8 @@ class Products with ChangeNotifier {
   }
 
   void deleteProduct(String id) {
-    final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json?auth=$token';
+    final url =
+        'https://my-shop-app-be8be.firebaseio.com/products/$id.json?auth=$token';
     var existingProductIndex = _items.indexWhere((item) => item.id == id);
     var existingProduct = _items[existingProductIndex];
     // uses optimistic updating

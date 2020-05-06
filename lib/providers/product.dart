@@ -12,7 +12,6 @@ class Product with ChangeNotifier {
   final double price;
   final String imageUrl;
   bool isFavourite;
-  String _authToken;
 
   Product({
     @required this.id,
@@ -36,19 +35,18 @@ class Product with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> toggleFavouriteStatus(String token) async {
+  Future<void> toggleFavouriteStatus(String userId, String token) async {
     print('Token is $token');
-    final url = 'https://my-shop-app-be8be.firebaseio.com/products/$id.json?auth=$token';
+    final url = 'https://my-shop-app-be8be.firebaseio.com/userFavourites/$userId/$id.json?auth=$token';
     //use optimistic updating
     final oldStatus = isFavourite;
     isFavourite = !isFavourite;
     notifyListeners();
     try {
-      final response = await http.patch(
+      final response = await http.put(
         url,
-        body: json.encode({
-          'isFavourite': isFavourite,
-        }),
+        body: json.encode(isFavourite,
+        ),
       );
       // http doesnt treat errors on patch as a true error
       if (response.statusCode >= 400) throw HttpException('Error setting favourite');
