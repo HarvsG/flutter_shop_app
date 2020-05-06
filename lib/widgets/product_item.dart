@@ -49,7 +49,7 @@ class ProductItem extends StatelessWidget {
                 product.isFavourite ? Icons.favorite : Icons.favorite_border,
                 color: Theme.of(context).accentColor,
               ),
-              onPressed: () {product.toggleFavouriteStatus(auth.token);},
+              onPressed: () {product.toggleFavouriteStatus(auth.userId ,auth.token);},
             ),
           ),
           title: Text(

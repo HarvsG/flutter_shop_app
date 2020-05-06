@@ -41,6 +41,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         _isInit = false;
       }).catchError((e){
         print('error in product_overview_screen');
+        print(e);
       });
     }
     super.didChangeDependencies();
