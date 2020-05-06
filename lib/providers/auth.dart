@@ -113,7 +113,7 @@ class Auth with ChangeNotifier {
     }
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
-    prefs.remove('userData');
+    prefs.remove('authData');
     // prefs.clear(); would remove all data
   }
 
