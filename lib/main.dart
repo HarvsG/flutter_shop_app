@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import './screens/splash_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/orders_scren.dart';
 import './screens/products_detail_screen.dart';
@@ -27,11 +28,15 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider<Auth, Orders>(
           create: (ctx) => Orders(),
-          update: (ctx, auth, orders) => orders..addToken(auth.token)..addUserid(auth.userId),
+          update: (ctx, auth, orders) => orders
+            ..addToken(auth.token)
+            ..addUserid(auth.userId),
         ),
         ChangeNotifierProxyProvider<Auth, Products>(
           create: (ctx) => Products(),
-          update: (ctx, auth, product) => product..addToken(auth.token)..addUserid(auth.userId),
+          update: (ctx, auth, product) => product
+            ..addToken(auth.token)
+            ..addUserid(auth.userId),
         ),
       ],
       child: Consumer<Auth>(
@@ -42,7 +47,15 @@ class MyApp extends StatelessWidget {
             accentColor: Colors.deepOrange,
             fontFamily: 'Lato',
           ),
-          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          home: auth.isAuth
+              ? ProductsOverviewScreen()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (ctx, future) =>
+                      future.connectionState == ConnectionState.waiting
+                          ? SplashScreen()
+                          : AuthScreen(),
+                ),
           routes: {
             //AuthScreen.routeName: (ctx) => AuthScreen(), // for some reason this line prevents autologut
             OrdersScreen.routeName: (ctx) => OrdersScreen(),
